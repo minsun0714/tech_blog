@@ -392,6 +392,74 @@ main {
   opacity: 0.45;
 }
 
+/* 상단 nav 링크 (series / tags 페이지로 이동) */
+.top a.topnav {
+  font: inherit;
+  color: var(--ink-2);
+  padding: 7px 12px;
+  border-radius: 7px;
+  letter-spacing: 0.02em;
+}
+.top a.topnav:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+/* 드로어 내 explore 링크 */
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.drawer-nav a {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink-2);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.drawer-nav a:last-child {
+  border-bottom: none;
+}
+.drawer-nav a:hover {
+  color: var(--signal);
+}
+.drawer-nav a .arw {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* 시리즈 목록 페이지 */
+.index-list {
+  width: 100%;
+}
+.index-list .series-item {
+  padding: 14px 2px;
+  text-decoration: none;
+}
+.index-list .series-item .name {
+  font-size: 16px;
+}
+
+/* 태그 목록 페이지 */
+.tagcloud.lg {
+  gap: 9px;
+  max-width: 720px;
+}
+.tagcloud.lg .chip {
+  font-size: 13px;
+  padding: 6px 12px;
+  text-decoration: none;
+}
+.chip-num {
+  margin-left: 6px;
+  opacity: 0.5;
+  font-size: 0.85em;
+}
+
 /* ---------- list ---------- */
 .list-head {
   display: flex;

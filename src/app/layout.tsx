@@ -1,32 +1,16 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
-import Header, { type SeriesWithCount } from "@/components/Header";
+import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
-import { getCategories, getSeries, getTags, getPosts } from "@/lib/api";
-import { seriesCounts } from "@/lib/view";
 
 export const metadata: Metadata = {
   title: "stdout — backend 개발 기록",
   description: "Spring · JPA · DDD 등 백엔드 개발 기록을 담은 기술 블로그",
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [categories, series, tags, posts] = await Promise.all([
-    getCategories(),
-    getSeries(),
-    getTags(),
-    getPosts(),
-  ]);
-
-  const counts = seriesCounts(posts);
-  const seriesWithCount: SeriesWithCount[] = series.map((s) => ({
-    id: s.id,
-    name: s.name,
-    count: counts[s.id] ?? 0,
-  }));
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
       <head>
@@ -43,11 +27,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body>
         <Suspense>
-          <Header categories={categories} series={seriesWithCount} tags={tags} />
+          <Header />
         </Suspense>
         <div className="shell">
           <Suspense>
-            <Sidebar categories={categories} />
+            <Sidebar />
           </Suspense>
           <main id="main">{children}</main>
         </div>

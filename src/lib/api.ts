@@ -22,6 +22,7 @@ interface CategoriesResponse {
 export interface ApiSeries {
   id: number;
   name: string;
+  postCount?: number; // 백엔드가 시리즈 목록에 실어주면 사용 (없으면 개수 미표시)
 }
 interface SeriesResponse {
   seriesResponseList: ApiSeries[];
@@ -30,6 +31,7 @@ interface SeriesResponse {
 export interface ApiTag {
   id: number;
   name: string;
+  postCount?: number; // 백엔드가 태그 목록에 실어주면 사용 (없으면 개수 미표시)
 }
 
 export interface ApiPost {

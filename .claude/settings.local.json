@@ -4,7 +4,16 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(curl -s \"https://api.minsun.kr/api/posts?size=200\")",
-      "PowerShell(npm run *)"
+      "PowerShell(npm run *)",
+      "Bash(curl -s -D - -o /dev/null -H \"Origin: http://localhost:3001\" \"https://api.minsun.kr/api/categories\")",
+      "Bash(curl -s -D - -o /dev/null \"https://api.minsun.kr/api/categories\")",
+      "Bash(curl -s -H \"Origin: http://localhost:3001\" \"https://api.minsun.kr/api/categories\")",
+      "Bash(curl -s \"http://localhost:3001/api/categories\")",
+      "Bash(curl -s \"http://localhost:3001/series\")",
+      "Bash(curl -s \"http://localhost:3001/tags\")",
+      "Bash(curl -s \"http://localhost:3001/?series=%EC%BB%A8%EC%BB%A4%EB%9F%B0%EC%8B%9C\")",
+      "Bash(curl -s \"http://localhost:3001/?q=jvm\")",
+      "Bash(curl -s -D - -o /dev/null \"https://api.minsun.kr/api/posts?size=200&keyword=jvm\")"
     ]
   }
 }

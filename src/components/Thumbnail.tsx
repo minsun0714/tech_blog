@@ -10,7 +10,21 @@ function makeRng(seed: number) {
   };
 }
 
-export default function Thumbnail({ seed, label }: { seed: number; label?: string | null }) {
+export default function Thumbnail({
+  seed,
+  label,
+  src,
+}: {
+  seed: number;
+  label?: string | null;
+  /** 백엔드 thumbnailImage. 있으면 이미지를, null/미제공이면 아래 생성 썸네일을 그린다. */
+  src?: string | null;
+}) {
+  if (src) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={label || ""} loading="lazy" />;
+  }
+
   const r = makeRng(seed * 7 + 3);
   const W = 400,
     H = 250,

@@ -22,6 +22,7 @@ interface CategoriesResponse {
 export interface ApiSeries {
   id: number;
   name: string;
+  postCount?: number; // 백엔드가 시리즈 목록에 실어주면 사용 (없으면 개수 미표시)
 }
 interface SeriesResponse {
   seriesResponseList: ApiSeries[];
@@ -30,6 +31,7 @@ interface SeriesResponse {
 export interface ApiTag {
   id: number;
   name: string;
+  postCount?: number; // 백엔드가 태그 목록에 실어주면 사용 (없으면 개수 미표시)
 }
 
 export interface ApiPost {
@@ -97,8 +99,12 @@ export const getTags = cache(async (): Promise<ApiTag[]> => {
   return getJSON<ApiTag[]>("/api/tags", []);
 });
 
-export const getPosts = cache(async (): Promise<ApiPost[]> => {
-  const d = await getJSON<PageResponse<ApiPost>>("/api/posts?size=200", {
+export const getPosts = cache(async (keyword?: string): Promise<ApiPost[]> => {
+  // 검색은 백엔드 위임: keyword 쿼리로 전달한다.
+  // (백엔드 미구현 시 무시됨 → 전체 글 반환. 구현되면 서버에서 필터링.)
+  const kw = keyword?.trim();
+  const path = `/api/posts?size=200${kw ? `&keyword=${encodeURIComponent(kw)}` : ""}`;
+  const d = await getJSON<PageResponse<ApiPost>>(path, {
     content: [],
     totalPages: 0,
     totalElements: 0,

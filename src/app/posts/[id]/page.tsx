@@ -26,7 +26,7 @@ export default async function PostDetail({ params }: { params: { id: string } })
   if (!base) notFound();
 
   const p = enrich(base, categories, series);
-  const paragraphs = (p.content || "").split(/\n{2,}/).filter((s) => s.trim());
+  const html = (p.content || "").trim();
 
   return (
     <>
@@ -66,13 +66,13 @@ export default async function PostDetail({ params }: { params: { id: string } })
         <LikeButton postId={id} variant="lg" />
       </div>
 
-      <div className="prose">
-        {paragraphs.length ? (
-          paragraphs.map((para, i) => <p key={i}>{para}</p>)
-        ) : (
+      {html ? (
+        <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+      ) : (
+        <div className="prose">
           <p style={{ color: "var(--ink-3)" }}>본문이 없습니다.</p>
-        )}
-      </div>
+        </div>
+      )}
 
       <Comments postId={id} initial={comments} />
     </>

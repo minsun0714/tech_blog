@@ -1,34 +1,19 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ApiTag } from "@/lib/api";
 import type { ApiCategory } from "@/lib/api";
 import { useFilters } from "./useFilters";
 import CategoryTree from "./CategoryTree";
 
-export interface SeriesWithCount {
-  id: number;
-  name: string;
-  count: number;
-}
-
-export default function Header({
-  categories,
-  series,
-  tags,
-}: {
-  categories: ApiCategory[];
-  series: SeriesWithCount[];
-  tags: ApiTag[];
-}) {
+export default function Header() {
   const router = useRouter();
-  const { current, toggle, setSearch } = useFilters();
+  const { current, setSearch } = useFilters();
 
-  const [openDD, setOpenDD] = useState<null | "series" | "tags">(null);
   const [drawer, setDrawer] = useState(false);
   const [q, setQ] = useState(current.q);
-  const [tagFilter, setTagFilter] = useState("");
-  const ddRef = useRef<HTMLElement>(null);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [catLoading, setCatLoading] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout>>();
 
   // 검색: 350ms 디바운스 후 URL 반영
@@ -38,36 +23,37 @@ export default function Header({
     searchTimer.current = setTimeout(() => setSearch(v.trim()), 350);
   };
 
-  // 드롭다운 바깥 클릭 / ESC 닫기
+  // ESC 로 드로어 닫기
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (ddRef.current && !ddRef.current.contains(e.target as Node)) setOpenDD(null);
-    };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpenDD(null);
-        setDrawer(false);
-      }
+      if (e.key === "Escape") setDrawer(false);
     };
-    document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("click", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  // 드로어 열릴 때 스크롤 잠금
+  // 드로어 열릴 때: 스크롤 잠금 + 카테고리를 매번 새로 fetch (중간 갱신 반영)
   useEffect(() => {
     document.body.style.overflow = drawer ? "hidden" : "";
+    if (!drawer) return () => {};
+
+    let alive = true;
+    setCatLoading(true);
+    fetch("/api/categories", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => {
+        if (alive) setCategories(Array.isArray(d) ? d : []);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (alive) setCatLoading(false);
+      });
+
     return () => {
+      alive = false;
       document.body.style.overflow = "";
     };
   }, [drawer]);
-
-  const shownTags = tags.filter(
-    (t) => !tagFilter || t.name.toLowerCase().includes(tagFilter.toLowerCase()),
-  );
 
   return (
     <>
@@ -102,70 +88,13 @@ export default function Header({
             />
           </div>
 
-          <nav className="top" ref={ddRef}>
-            <div className={`dd${openDD === "series" ? " open" : ""}`}>
-              <button onClick={() => setOpenDD(openDD === "series" ? null : "series")}>
-                series <span className="arw">▼</span>
-              </button>
-              <div className="popover">
-                <div className="pop-h">series</div>
-                <div>
-                  {series.length ? (
-                    series.map((s) => (
-                      <button
-                        key={s.id}
-                        className={`series-item${current.series === s.name ? " active" : ""}`}
-                        onClick={() => {
-                          toggle("series", s.name);
-                          setOpenDD(null);
-                        }}
-                      >
-                        <span className="name">{s.name}</span>
-                        <span className="num">{s.count}</span>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="pop-empty">시리즈 없음</div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className={`dd${openDD === "tags" ? " open" : ""}`}>
-              <button onClick={() => setOpenDD(openDD === "tags" ? null : "tags")}>
-                tags <span className="arw">▼</span>
-              </button>
-              <div className="popover">
-                <div className="pop-h">tags</div>
-                <input
-                  className="pop-filter"
-                  placeholder="태그 검색"
-                  value={tagFilter}
-                  onChange={(e) => setTagFilter(e.target.value)}
-                  autoComplete="off"
-                />
-                <div className="pop-scroll">
-                  <div className="tagcloud">
-                    {shownTags.length ? (
-                      shownTags.map((t) => (
-                        <span
-                          key={t.id}
-                          className={`chip${current.tag === t.name ? " active" : ""}`}
-                          onClick={() => {
-                            toggle("tag", t.name);
-                            setOpenDD(null);
-                          }}
-                        >
-                          {t.name}
-                        </span>
-                      ))
-                    ) : (
-                      <div className="pop-empty">일치하는 태그 없음</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <nav className="top">
+            <Link className="topnav" href="/series">
+              series
+            </Link>
+            <Link className="topnav" href="/tags">
+              tags
+            </Link>
           </nav>
         </div>
       </header>
@@ -181,20 +110,27 @@ export default function Header({
             ✕
           </button>
         </div>
+
         <div className="rail-block">
           <div className="rail-h">categories</div>
-          <CategoryTree categories={categories} onNavigate={() => setDrawer(false)} />
+          {catLoading && !categories.length ? (
+            <div className="pop-empty">불러오는 중…</div>
+          ) : (
+            <CategoryTree categories={categories} onNavigate={() => setDrawer(false)} />
+          )}
         </div>
-        <p
-          style={{
-            fontFamily: "var(--mono)",
-            fontSize: 11,
-            color: "var(--ink-3)",
-            lineHeight: 1.7,
-          }}
-        >
-          시리즈·태그는 상단 헤더에서 선택하세요.
-        </p>
+
+        <div className="rail-block">
+          <div className="rail-h">explore</div>
+          <nav className="drawer-nav">
+            <Link href="/series" onClick={() => setDrawer(false)}>
+              series <span className="arw">→</span>
+            </Link>
+            <Link href="/tags" onClick={() => setDrawer(false)}>
+              tags <span className="arw">→</span>
+            </Link>
+          </nav>
+        </div>
       </aside>
     </>
   );

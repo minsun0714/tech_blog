@@ -1,6 +1,18 @@
 import type { ApiCategory, ApiPost, ApiSeries } from "./api";
 
 /** 목록/상세 렌더에 필요한 형태로 가공한 글. API 응답이 희소하므로 이름은 id로 유도한다. */
+
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
 export interface EnrichedPost {
   postId: number | null;
   title: string;
@@ -83,7 +95,7 @@ export function excerpt(content: string, n = 120): string {
 export function enrich(
   post: ApiPost,
   categories: ApiCategory[],
-  series: ApiSeries[],
+  series: PageResponse<ApiSeries>,
 ): EnrichedPost {
   return {
     postId: post.postId,
@@ -93,7 +105,7 @@ export function enrich(
     categoryId: post.categoryId,
     categoryName: categoryNameById(categories, post.categoryId),
     seriesId: post.seriesId,
-    seriesName: seriesNameById(series, post.seriesId),
+    seriesName: seriesNameById(series?.content, post.seriesId),
     tagNames: post.tagNames ?? [],
     thumbnailImage: post.thumbnailImage ?? null,
   };

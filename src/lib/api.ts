@@ -24,9 +24,6 @@ export interface ApiSeries {
   name: string;
   postCount?: number; // 백엔드가 시리즈 목록에 실어주면 사용 (없으면 개수 미표시)
 }
-interface SeriesResponse {
-  seriesResponseList: ApiSeries[];
-}
 
 export interface ApiTag {
   id: number;
@@ -80,37 +77,34 @@ interface CommentsResponse {
 }
 
 /* ---------------- fetch helper ---------------- */
-async function getJSON<T>(path: string, fallback: T): Promise<T> {
+async function getJSON<T>(path: string): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       cache: "no-store",
       headers: { Accept: "application/json" },
     });
-    if (!res.ok) return fallback;
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
     return (await res.json()) as T;
   } catch {
     // 백엔드가 꺼져 있어도 페이지는 렌더되도록 fallback 반환
-    return fallback;
+    throw new Error(`Failed to fetch ${path} from API_BASE=${API_BASE}`);
   }
 }
 
 /* ---------------- GET fetchers (요청 단위로 memoize) ---------------- */
 export const getCategories = cache(async (): Promise<ApiCategory[]> => {
-  const d = await getJSON<CategoriesResponse>("/api/categories", {
-    categoryList: [],
-  });
+  const d = await getJSON<CategoriesResponse>("/api/categories");
   return d.categoryList ?? [];
 });
 
-export const getSeries = cache(async (): Promise<ApiSeries[]> => {
-  const d = await getJSON<SeriesResponse>("/api/series", {
-    seriesResponseList: [],
-  });
-  return d.seriesResponseList ?? [];
+export const getSeries = cache(async (): Promise<PageResponse<ApiSeries>> => {
+  const d = await getJSON<PageResponse<ApiSeries>>("/api/series");
+  console.log("getSeries", d);
+  return d;
 });
 
 export const getTags = cache(async (): Promise<ApiTag[]> => {
-  return getJSON<ApiTag[]>("/api/tags", []);
+  return getJSON<ApiTag[]>("/api/tags");
 });
 
 export const getPosts = cache(async (keyword?: string): Promise<ApiPost[]> => {
@@ -118,28 +112,16 @@ export const getPosts = cache(async (keyword?: string): Promise<ApiPost[]> => {
   // (백엔드 미구현 시 무시됨 → 전체 글 반환. 구현되면 서버에서 필터링.)
   const kw = keyword?.trim();
   const path = `/api/posts?size=200${kw ? `&keyword=${encodeURIComponent(kw)}` : ""}`;
-  const d = await getJSON<PageResponse<ApiPost>>(path, {
-    content: [],
-    totalPages: 0,
-    totalElements: 0,
-    number: 0,
-    size: 0,
-    first: true,
-    last: true,
-    numberOfElements: 0,
-    empty: true,
-  });
+  const d = await getJSON<PageResponse<ApiPost>>(path);
   return d.content ?? [];
 });
 
 export const getPost = cache(async (id: number): Promise<ApiPost | null> => {
-  return getJSON<ApiPost | null>(`/api/posts/${id}`, null);
+  return getJSON<ApiPost | null>(`/api/posts/${id}`);
 });
 
 export const getComments = cache(async (postId: number): Promise<ApiComment[]> => {
-  const d = await getJSON<CommentsResponse>(`/api/posts/${postId}/comments`, {
-    commentResponseList: [],
-  });
+  const d = await getJSON<CommentsResponse>(`/api/posts/${postId}/comments`);
   return d.commentResponseList ?? [];
 });
 

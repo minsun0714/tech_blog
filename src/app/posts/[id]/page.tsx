@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getPost, getPosts, getCategories, getSeries, getComments } from "@/lib/api";
 import { enrich } from "@/lib/view";
 import Thumbnail from "@/components/Thumbnail";
-import LikeButton from "@/components/LikeButton";
 import Comments from "@/components/Comments";
 import { qs } from "@/lib/view";
 
@@ -62,8 +61,6 @@ export default async function PostDetail({ params }: { params: { id: string } })
             {t}
           </Link>
         ))}
-        <span className="spacer" />
-        <LikeButton postId={id} variant="lg" />
       </div>
 
       {html ? (

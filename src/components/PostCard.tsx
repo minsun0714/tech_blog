@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { EnrichedPost } from "@/lib/view";
 import { qs } from "@/lib/view";
 import Thumbnail from "./Thumbnail";
-import LikeButton from "./LikeButton";
 
 /** 목록 카드. 카드 전체가 링크는 아니고, 썸네일/제목/메타/태그가 각각 링크(중첩 앵커 방지). */
 export default function PostCard({ post }: { post: EnrichedPost }) {
@@ -60,10 +59,6 @@ export default function PostCard({ post }: { post: EnrichedPost }) {
             ))}
           </div>
         )}
-
-        <div className="card-foot">
-          {post.postId != null && <LikeButton postId={post.postId} />}
-        </div>
       </div>
     </article>
   );

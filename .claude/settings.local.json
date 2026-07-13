@@ -13,7 +13,8 @@
       "Bash(curl -s \"http://localhost:3001/tags\")",
       "Bash(curl -s \"http://localhost:3001/?series=%EC%BB%A8%EC%BB%A4%EB%9F%B0%EC%8B%9C\")",
       "Bash(curl -s \"http://localhost:3001/?q=jvm\")",
-      "Bash(curl -s -D - -o /dev/null \"https://api.minsun.kr/api/posts?size=200&keyword=jvm\")"
+      "Bash(curl -s -D - -o /dev/null \"https://api.minsun.kr/api/posts?size=200&keyword=jvm\")",
+      "Bash(npx tsc *)"
     ]
   }
 }

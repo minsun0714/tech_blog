@@ -35,7 +35,7 @@ export default async function PostDetail({ params }: { params: { id: string } })
       </Link>
 
       <div className="post-hero">
-        <Thumbnail seed={id} label={p.categoryName} />
+        <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImage} />
       </div>
 
       <div className="post-meta">

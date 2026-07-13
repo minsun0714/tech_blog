@@ -42,6 +42,8 @@ export interface ApiPost {
   tagNames: string[];
   categoryId: number | null;
   seriesId: number | null;
+  // 백엔드가 곧 추가 예정. 없거나 null이면 기본 썸네일로 폴백한다.
+  thumbnailImage?: string | null;
 }
 interface PageResponse<T> {
   content: T[];

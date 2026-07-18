@@ -25,6 +25,7 @@ export default async function PostDetail({ params }: { params: { id: string } })
   if (!base) notFound();
 
   const p = enrich(base, categories, series);
+  console.log("post thumbnail", detail);
   const html = (p.content || "").trim();
 
   return (
@@ -34,7 +35,7 @@ export default async function PostDetail({ params }: { params: { id: string } })
       </Link>
 
       <div className="post-hero">
-        <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImage} />
+        <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImageUrl} />
       </div>
 
       <div className="post-meta">

@@ -11,11 +11,11 @@ export default function PostCard({ post }: { post: EnrichedPost }) {
     <article className="card">
       {href ? (
         <Link href={href} className="thumb" aria-label={post.title}>
-          <Thumbnail seed={post.postId ?? 0} label={post.categoryName} src={post.thumbnailImage} />
+          <Thumbnail seed={post.postId ?? 0} label={post.categoryName} src={post.thumbnailImageUrl} />
         </Link>
       ) : (
         <div className="thumb">
-          <Thumbnail seed={0} label={post.categoryName} src={post.thumbnailImage} />
+          <Thumbnail seed={0} label={post.categoryName} src={post.thumbnailImageUrl} />
         </div>
       )}
 

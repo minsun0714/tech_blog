@@ -16,10 +16,6 @@ const fetcher = async (url: string): Promise<ApiComment[]> => {
   return res.json();
 };
 
-// 백엔드는 현재 댓글 쓰기 바디로 {content, password}만 받는다. author 를 보내면 400.
-// 백엔드가 작성자 이름 필드를 추가하면 true 로 바꾸면 입력한 이름이 전송된다(표시는 GET 응답에 author 가 실려야 함).
-const SEND_AUTHOR = false;
-
 async function postError(res: Response, fallback: string): Promise<string> {
   const e = await res.json().catch(() => null);
   return (e && typeof e.error === "string" && e.error) || fallback;
@@ -45,8 +41,8 @@ export default function Comments({ postId, initial }: { postId: number; initial:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         content,
-        password: pw || undefined,
-        ...(SEND_AUTHOR ? { author: name } : {}),
+        password: pw,
+        author: name
       }),
     });
     if (!res.ok) {
@@ -69,8 +65,8 @@ export default function Comments({ postId, initial }: { postId: number; initial:
       body: JSON.stringify({
         postId,
         content,
-        password: pw || undefined,
-        ...(SEND_AUTHOR ? { author: name } : {}),
+        password: pw,
+        author: name
       }),
     });
     if (!res.ok) {

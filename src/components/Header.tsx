@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ApiCategory } from "@/lib/api";
 import { useFilters } from "./useFilters";
 import CategoryTree from "./CategoryTree";
+import CategoryTreeSkeleton from "./CategoryTreeSkeleton";
 
 export default function Header() {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function Header() {
         <div className="rail-block">
           <div className="rail-h">categories</div>
           {catLoading && !categories.length ? (
-            <div className="pop-empty">불러오는 중…</div>
+            <CategoryTreeSkeleton />
           ) : (
             <CategoryTree categories={categories} onNavigate={() => setDrawer(false)} />
           )}

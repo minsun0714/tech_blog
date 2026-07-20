@@ -26,7 +26,9 @@
       "Bash(curl -s \"http://localhost:3123/api/posts/18/comments\" -w \"\\\\n[HTTP %{http_code}]\\\\n\")",
       "Bash(curl -s \"http://localhost:3123/posts/18\")",
       "Bash(curl -s -X DELETE \"https://api.minsun.kr/api/comments/5\" -H \"X-API-KEY: minsun-tech-blog\" -w \"[HTTP %{http_code}]\\\\n\")",
-      "Bash(curl -s \"https://api.minsun.kr/api/posts/18/comments\")"
+      "Bash(curl -s \"https://api.minsun.kr/api/posts/18/comments\")",
+      "Bash(node *)",
+      "Bash(npx prettier *)"
     ]
   }
 }

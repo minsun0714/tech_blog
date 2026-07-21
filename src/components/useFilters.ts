@@ -11,7 +11,6 @@ export function useFilters() {
     category: sp.get("category"),
     series: sp.get("series"),
     tag: sp.get("tag"),
-    q: sp.get("q") || "",
     page: Number(sp.get("page") || "1") || 1,
   };
 
@@ -21,14 +20,13 @@ export function useFilters() {
     current,
     /**
      * category/series/tag 는 상호 배타적 — 하나를 고르면 나머지 둘은 해제된다.
-     * 같은 값이면 해제. 페이지는 1로 초기화. 검색(q)은 유지.
+     * 같은 값이면 해제. 페이지는 1로 초기화.
      */
     toggle: (key: "category" | "series" | "tag", value: string) => {
       const next: Filters = { ...current, category: null, series: null, tag: null, page: 1 };
       if (current[key] !== value) next[key] = value;
       go(next);
     },
-    setSearch: (q: string) => go({ ...current, q: q || undefined, page: 1 }),
     gotoPage: (n: number) => {
       go({ ...current, page: n });
       if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });

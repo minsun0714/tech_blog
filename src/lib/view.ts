@@ -30,7 +30,6 @@ export interface Filters {
   category: string | null;
   series: string | null;
   tag: string | null;
-  q: string;
   page: number;
 }
 
@@ -112,23 +111,10 @@ export function enrich(
 }
 
 export function filterPosts(posts: EnrichedPost[], f: Filters): EnrichedPost[] {
-  const q = f.q.trim().toLowerCase();
   return posts.filter((p) => {
     if (f.category && p.categoryName !== f.category) return false;
     if (f.series && p.seriesName !== f.series) return false;
     if (f.tag && !p.tagNames.includes(f.tag)) return false;
-    if (q) {
-      const hay = [
-        p.title,
-        p.content,
-        p.tagNames.join(" "),
-        p.categoryName ?? "",
-        p.seriesName ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
     return true;
   });
 }
@@ -139,7 +125,6 @@ export function qs(f: Partial<Filters>): string {
   if (f.category) p.set("category", f.category);
   if (f.series) p.set("series", f.series);
   if (f.tag) p.set("tag", f.tag);
-  if (f.q) p.set("q", f.q);
   if (f.page && f.page > 1) p.set("page", String(f.page));
   const s = p.toString();
   return s ? `?${s}` : "";

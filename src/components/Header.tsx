@@ -1,28 +1,17 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ApiCategory } from "@/lib/api";
-import { useFilters } from "./useFilters";
 import CategoryTree from "./CategoryTree";
 import CategoryTreeSkeleton from "./CategoryTreeSkeleton";
 
 export default function Header() {
   const router = useRouter();
-  const { current, setSearch } = useFilters();
 
   const [drawer, setDrawer] = useState(false);
-  const [q, setQ] = useState(current.q);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [catLoading, setCatLoading] = useState(false);
-  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
-
-  // 검색: 350ms 디바운스 후 URL 반영
-  const onSearchInput = (v: string) => {
-    setQ(v);
-    clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => setSearch(v.trim()), 350);
-  };
 
   // ESC 로 드로어 닫기
   useEffect(() => {
@@ -76,17 +65,6 @@ export default function Header() {
               <span className="caret">&gt;</span> stdout
             </span>
             <span className="tag">backend 개발 기록</span>
-          </div>
-
-          <div className="search">
-            <span className="mag">⌕</span>
-            <input
-              type="search"
-              placeholder="제목·내용·태그 검색"
-              value={q}
-              onChange={(e) => onSearchInput(e.target.value)}
-              autoComplete="off"
-            />
           </div>
 
           <nav className="top">

@@ -12,10 +12,9 @@ type SearchParams = { [key: string]: string | string[] | undefined };
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
 
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
-  // 검색어는 백엔드로 위임 (keyword 쿼리). 카테고리/시리즈/태그는 메모리 필터.
-  const q = (one(searchParams.q) ?? "").trim();
+  // 카테고리/시리즈/태그는 메모리 필터.
   const [posts, categories, series] = await Promise.all([
-    getPosts(q),
+    getPosts(),
     getCategories(),
     getSeries(),
   ]);
@@ -37,7 +36,6 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
     category: fCategory,
     series: fSeries,
     tag: fTag,
-    q: "", // 검색은 위 getPosts(q)에서 백엔드가 처리 → 메모리 필터에서는 제외
     page: Number(one(searchParams.page) ?? "1") || 1,
   };
 
@@ -47,12 +45,11 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
   const items = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   let label = "전체 글";
-  if (q) label = `검색 · "${q}"`;
-  else if (f.category) label = `카테고리 · ${f.category}`;
+  if (f.category) label = `카테고리 · ${f.category}`;
   else if (f.series) label = `시리즈 · ${f.series}`;
   else if (f.tag) label = `태그 · #${f.tag}`;
 
-  const hasFilter = Boolean(f.category || f.series || f.tag || q);
+  const hasFilter = Boolean(f.category || f.series || f.tag);
 
   return (
     <>

@@ -6,7 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "stdout — backend 개발 기록",
+  title: "Minsun Tech Blog",
   description: "Spring · JPA · DDD 등 백엔드 개발 기록을 담은 기술 블로그",
 };
 

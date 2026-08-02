@@ -669,6 +669,10 @@ main {
   display: block;
   object-fit: cover;
 }
+.post-content {
+  width: min(100%, 72ch);
+  margin-inline: auto;
+}
 .post-meta {
   font-family: var(--mono);
   font-size: 12px;

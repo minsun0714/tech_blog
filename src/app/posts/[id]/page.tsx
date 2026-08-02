@@ -34,11 +34,11 @@ export default async function PostDetail({ params }: { params: { id: string } })
         ← 목록으로
       </Link>
 
-      <div className="post-hero">
-        <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImageUrl} />
-      </div>
-
       <div className="post-content">
+        <div className="post-hero">
+          <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImageUrl} />
+        </div>
+
         <div className="post-meta">
           {p.categoryName && (
             <Link className="cat" href={`/${qs({ category: p.categoryName })}`}>

@@ -670,7 +670,7 @@ main {
   object-fit: contain;
 }
 .post-content {
-  width: min(100%, 72ch);
+  width: 100%;
   margin-inline: auto;
 }
 .post-meta {
@@ -693,7 +693,6 @@ main {
   line-height: 1.15;
   letter-spacing: -0.015em;
   margin-bottom: 18px;
-  max-width: 20ch;
 }
 .post-tags {
   display: flex;
@@ -720,7 +719,7 @@ main {
   font-size: 16.5px;
   line-height: 1.78;
   color: #25272c;
-  max-width: 66ch;
+  width: 100%;
   overflow-wrap: break-word;
 }
 .prose > :first-child {
@@ -877,7 +876,7 @@ main {
   margin-top: 54px;
   padding-top: 34px;
   border-top: 1px solid var(--ink);
-  max-width: 72ch;
+  width: 100%;
 }
 .comments-h {
   font-family: var(--mono);

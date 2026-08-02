@@ -38,41 +38,43 @@ export default async function PostDetail({ params }: { params: { id: string } })
         <Thumbnail seed={id} label={p.categoryName} src={p.thumbnailImageUrl} />
       </div>
 
-      <div className="post-meta">
-        {p.categoryName && (
-          <Link className="cat" href={`/${qs({ category: p.categoryName })}`}>
-            {p.categoryName}
-          </Link>
-        )}
-        {p.seriesName && (
-          <>
-            <span>/</span>
-            <Link href={`/${qs({ series: p.seriesName })}`}>{p.seriesName}</Link>
-          </>
-        )}
-        <span>·</span>
-        <span>#{id}</span>
-      </div>
-
-      <h1 className="post-title">{p.title}</h1>
-
-      <div className="post-tags">
-        {p.tagNames.map((t) => (
-          <Link key={t} className="chip plain" href={`/${qs({ tag: t })}`}>
-            {t}
-          </Link>
-        ))}
-      </div>
-
-      {html ? (
-        <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
-      ) : (
-        <div className="prose">
-          <p style={{ color: "var(--ink-3)" }}>본문이 없습니다.</p>
+      <div className="post-content">
+        <div className="post-meta">
+          {p.categoryName && (
+            <Link className="cat" href={`/${qs({ category: p.categoryName })}`}>
+              {p.categoryName}
+            </Link>
+          )}
+          {p.seriesName && (
+            <>
+              <span>/</span>
+              <Link href={`/${qs({ series: p.seriesName })}`}>{p.seriesName}</Link>
+            </>
+          )}
+          <span>·</span>
+          <span>#{id}</span>
         </div>
-      )}
 
-      <Comments postId={id} initial={comments} />
+        <h1 className="post-title">{p.title}</h1>
+
+        <div className="post-tags">
+          {p.tagNames.map((t) => (
+            <Link key={t} className="chip plain" href={`/${qs({ tag: t })}`}>
+              {t}
+            </Link>
+          ))}
+        </div>
+
+        {html ? (
+          <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+        ) : (
+          <div className="prose">
+            <p style={{ color: "var(--ink-3)" }}>본문이 없습니다.</p>
+          </div>
+        )}
+
+        <Comments postId={id} initial={comments} />
+      </div>
     </>
   );
 }

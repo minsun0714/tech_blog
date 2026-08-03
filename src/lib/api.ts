@@ -122,10 +122,18 @@ export const getComments = cache(async (postId: number): Promise<ApiComment[]> =
 });
 
 /* ---------------- 인증 붙은 쓰기 (서버 전용) ----------------
- * X-API-KEY 는 NEXT_PUBLIC_ 이 아니므로 서버(Route Handler)에서만 읽힌다 → 브라우저 노출 없음.
+ * 키는 NEXT_PUBLIC_ 이 아니므로 서버(Route Handler)에서만 읽힌다 → 브라우저 노출 없음.
  * 이 함수들은 반드시 서버 사이드(app/api/*)에서만 호출할 것.
+ *
+ * 환경변수 이름과 헤더 이름은 별개다:
+ *   Vercel 은 환경변수 이름에 하이픈을 허용하지 않으므로 X_API_KEY 로 등록하고,
+ *   백엔드로 나갈 때만 헤더명 X-API-KEY 로 바꿔서 보낸다.
+ *   로컬 .env 의 기존 X-API-KEY 표기도 계속 지원한다(둘 중 있는 쪽 사용).
  */
-const API_KEY = process.env["X-API-KEY"] ?? "";
+function getApiKey(): string {
+  // 모듈 로드 시점이 아니라 호출 시점에 읽는다(빌드 타임 인라인 방지).
+  return process.env.X_API_KEY ?? process.env["X-API-KEY"] ?? "";
+}
 
 export interface WriteResult<T = unknown> {
   ok: boolean;
@@ -138,6 +146,7 @@ async function sendJSON<T>(
   body: unknown,
   method: "POST" | "PATCH" | "DELETE" = "POST",
 ): Promise<WriteResult<T>> {
+  const apiKey = getApiKey();
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method,
@@ -145,7 +154,7 @@ async function sendJSON<T>(
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "X-API-KEY": API_KEY,
+        "X-API-KEY": apiKey,
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     });

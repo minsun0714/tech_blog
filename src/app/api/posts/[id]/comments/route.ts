@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getComments, createComment } from "@/lib/api";
+import { MAX_AUTHOR_LENGTH } from "@/lib/view";
 
 /**
  * 댓글 목록/작성 프록시.
@@ -26,10 +27,19 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!body || typeof body.content !== "string" || !body.content.trim()) {
     return NextResponse.json({ error: "내용을 입력하세요." }, { status: 400 });
   }
+  // 브라우저의 maxLength 는 우회 가능하므로 서버에서도 막는다.
+  // 백엔드 author 는 varchar(255) 라, 넘기면 DB 제약 위반으로 409 가 된다.
+  const author = typeof body.author === "string" ? body.author.trim() : undefined;
+  if (author && author.length > MAX_AUTHOR_LENGTH) {
+    return NextResponse.json(
+      { error: `이름은 ${MAX_AUTHOR_LENGTH}자 이하로 입력하세요.` },
+      { status: 400 },
+    );
+  }
 
   const r = await createComment(postId, {
     content: body.content.trim(),
-    author: typeof body.author === "string" ? body.author.trim() : undefined,
+    author,
     password: typeof body.password === "string" ? body.password : undefined,
   });
   if (!r.ok) {

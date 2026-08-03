@@ -2,7 +2,7 @@
 import { useState, type ReactNode } from "react";
 import useSWR from "swr";
 import type { ApiComment } from "@/lib/api";
-import { countComments, type CommentNode } from "@/lib/view";
+import { countComments, MAX_AUTHOR_LENGTH, type CommentNode } from "@/lib/view";
 
 /**
  * 댓글 영역.
@@ -187,6 +187,9 @@ function RootForm({
   const [busy, setBusy] = useState(false);
   const submit = async () => {
     if (!name.trim() || !content.trim()) return alert("이름과 내용을 입력하세요.");
+    if (name.trim().length > MAX_AUTHOR_LENGTH) {
+      return alert(`이름은 ${MAX_AUTHOR_LENGTH}자 이하로 입력하세요.`);
+    }
     setBusy(true);
     const ok = await onSubmit(name.trim(), pw, content.trim());
     setBusy(false);
@@ -200,7 +203,12 @@ function RootForm({
     <div className="cbox" style={{ marginTop: 22 }}>
       <div className="form-title">댓글 작성</div>
       <div className="row">
-        <input placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          placeholder="이름"
+          value={name}
+          maxLength={MAX_AUTHOR_LENGTH}
+          onChange={(e) => setName(e.target.value)}
+        />
         <input
           type="password"
           placeholder="비밀번호 (수정 시 필요)"
@@ -238,6 +246,9 @@ function ReplyForm({
   const [busy, setBusy] = useState(false);
   const submit = async () => {
     if (!name.trim() || !content.trim()) return alert("이름과 내용을 입력하세요.");
+    if (name.trim().length > MAX_AUTHOR_LENGTH) {
+      return alert(`이름은 ${MAX_AUTHOR_LENGTH}자 이하로 입력하세요.`);
+    }
     setBusy(true);
     await onSubmit(parentId, name.trim(), pw, content.trim());
     setBusy(false);
@@ -246,7 +257,12 @@ function ReplyForm({
     <div className="cbox">
       <div className="form-title">답글 작성</div>
       <div className="row">
-        <input placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          placeholder="이름"
+          value={name}
+          maxLength={MAX_AUTHOR_LENGTH}
+          onChange={(e) => setName(e.target.value)}
+        />
         <input
           type="password"
           placeholder="비밀번호"

@@ -138,6 +138,14 @@ export function pageWindow(cur: number, total: number): (number | "…")[] {
   return [1, "…", cur - 1, cur, cur + 1, "…", total];
 }
 
+/**
+ * 댓글 작성자 이름 최대 길이.
+ * 백엔드 comment.author 는 varchar(255) 라 초과하면 DB 제약 위반으로 409 가 난다.
+ * (실측: 글자 수 기준. 한글 255자도 통과, 256자부터 409)
+ * 이름 칸에 255자는 과하므로 20자로 제한한다 — 늘리려면 이 값만 바꾸면 된다(255 이하 유지).
+ */
+export const MAX_AUTHOR_LENGTH = 20;
+
 /** 재귀 댓글 개수 (대댓글 포함) */
 export interface CommentNode {
   commentId: number;

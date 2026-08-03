@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createReply } from "@/lib/api";
+import { MAX_AUTHOR_LENGTH } from "@/lib/view";
 
 /** 답글 작성 프록시: POST /api/comments/{parentId}/replies (바디 {postId, content, ...}). */
 export const dynamic = "force-dynamic";
@@ -18,10 +19,18 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   ) {
     return NextResponse.json({ error: "postId 와 내용이 필요합니다." }, { status: 400 });
   }
+  // 브라우저의 maxLength 는 우회 가능하므로 서버에서도 막는다(백엔드 author 는 varchar(255)).
+  const author = typeof body.author === "string" ? body.author.trim() : undefined;
+  if (author && author.length > MAX_AUTHOR_LENGTH) {
+    return NextResponse.json(
+      { error: `이름은 ${MAX_AUTHOR_LENGTH}자 이하로 입력하세요.` },
+      { status: 400 },
+    );
+  }
 
   const r = await createReply(parentId, body.postId, {
     content: body.content.trim(),
-    author: typeof body.author === "string" ? body.author.trim() : undefined,
+    author,
     password: typeof body.password === "string" ? body.password : undefined,
   });
   if (!r.ok) {

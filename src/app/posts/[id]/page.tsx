@@ -40,8 +40,8 @@ export default async function PostDetail({ params }: { params: { id: string } })
         </div>
 
         <div className="post-meta">
-          {p.categoryName && (
-            <Link className="cat" href={`/${qs({ category: p.categoryName })}`}>
+          {p.categoryName && p.categoryId != null && (
+            <Link className="cat" href={`/${qs({ category: p.categoryId })}`}>
               {p.categoryName}
             </Link>
           )}

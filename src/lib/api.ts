@@ -107,8 +107,10 @@ export const getTags = cache(async (): Promise<ApiTag[]> => {
   return getJSON<ApiTag[]>("/api/tags");
 });
 
-export const getPosts = cache(async (): Promise<ApiPost[]> => {
-  const d = await getJSON<PageResponse<ApiPost>>("/api/posts?size=200");
+export const getPosts = cache(async (categoryId?: number): Promise<ApiPost[]> => {
+  const params = new URLSearchParams({ size: "200" });
+  if (categoryId != null) params.set("categoryId", String(categoryId));
+  const d = await getJSON<PageResponse<ApiPost>>(`/api/posts?${params}`);
   return d.content ?? [];
 });
 

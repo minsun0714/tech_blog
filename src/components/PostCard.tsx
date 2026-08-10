@@ -21,8 +21,8 @@ export default function PostCard({ post }: { post: EnrichedPost }) {
 
       <div className="card-inner">
         <div className="card-meta">
-          {post.categoryName && (
-            <Link className="cat" href={`/${qs({ category: post.categoryName })}`}>
+          {post.categoryName && post.categoryId != null && (
+            <Link className="cat" href={`/${qs({ category: post.categoryId })}`}>
               {post.categoryName}
             </Link>
           )}

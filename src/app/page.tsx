@@ -1,5 +1,5 @@
 import { getCategories, getPosts, getSeries } from "@/lib/api";
-import { enrich, filterPosts, type Filters } from "@/lib/view";
+import { categoryById, enrich, filterPosts, type Filters } from "@/lib/view";
 import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
 import ClearFilters from "@/components/ClearFilters";
@@ -12,9 +12,19 @@ type SearchParams = { [key: string]: string | string[] | undefined };
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
 
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
+  const fCategory = Number(one(searchParams.category)) || null;
+  let fSeries = one(searchParams.series);
+  let fTag = one(searchParams.tag);
+  if (fCategory != null) {
+    fSeries = null;
+    fTag = null;
+  } else if (fSeries) {
+    fTag = null;
+  }
+
   // 카테고리/시리즈/태그는 메모리 필터.
   const [posts, categories, series] = await Promise.all([
-    getPosts(),
+    getPosts(fCategory ?? undefined),
     getCategories(),
     getSeries(),
   ]);
@@ -22,16 +32,6 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
 
   // category/series/tag 는 상호 배타적 — 여러 개가 들어와도 하나만 적용한다.
   // 우선순위: category > series > tag
-  const fCategory = one(searchParams.category);
-  let fSeries = one(searchParams.series);
-  let fTag = one(searchParams.tag);
-  if (fCategory) {
-    fSeries = null;
-    fTag = null;
-  } else if (fSeries) {
-    fTag = null;
-  }
-
   const f: Filters = {
     category: fCategory,
     series: fSeries,
@@ -48,6 +48,8 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
   if (f.category) label = `카테고리 · ${f.category}`;
   else if (f.series) label = `시리즈 · ${f.series}`;
   else if (f.tag) label = `태그 · #${f.tag}`;
+
+  if (f.category != null) label = categoryById(categories, f.category)?.categoryName ?? label;
 
   const hasFilter = Boolean(f.category || f.series || f.tag);
 

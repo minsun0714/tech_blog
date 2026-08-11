@@ -18,7 +18,7 @@ export default async function TagsPage() {
       {tags.length ? (
         <div className="tagcloud lg">
           {tags.map((t) => (
-            <Link key={t.id} className="chip plain" href={`/${qs({ tag: t.name })}`}>
+            <Link key={t.id} className="chip plain" href={`/${qs({ tag: t.id })}`}>
               {t.name}
               {typeof t.postCount === "number" && <span className="chip-num">{t.postCount}</span>}
             </Link>

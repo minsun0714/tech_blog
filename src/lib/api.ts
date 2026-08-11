@@ -42,7 +42,7 @@ export interface ApiPost {
   // 백엔드가 곧 추가 예정. 없거나 null이면 기본 썸네일로 폴백한다.
   thumbnailImageUrl?: string | null;
 }
-interface PageResponse<T> {
+export interface PageResponse<T> {
   content: T[];
   totalPages: number;
   totalElements: number;
@@ -107,11 +107,24 @@ export const getTags = cache(async (): Promise<ApiTag[]> => {
   return getJSON<ApiTag[]>("/api/tags");
 });
 
-export const getPosts = cache(async (categoryId?: number): Promise<ApiPost[]> => {
-  const params = new URLSearchParams({ size: "200" });
-  if (categoryId != null) params.set("categoryId", String(categoryId));
+export interface PostQuery {
+  categoryId?: number;
+  seriesId?: number;
+  tagId?: number;
+  page?: number;
+  size?: number;
+}
+
+export const getPosts = cache(async (query: PostQuery = {}): Promise<PageResponse<ApiPost>> => {
+  const params = new URLSearchParams({
+    page: String(query.page ?? 0),
+    size: String(query.size ?? 6),
+  });
+  if (query.categoryId != null) params.set("categoryId", String(query.categoryId));
+  if (query.seriesId != null) params.set("seriesId", String(query.seriesId));
+  if (query.tagId != null) params.set("tagId", String(query.tagId));
   const d = await getJSON<PageResponse<ApiPost>>(`/api/posts?${params}`);
-  return d.content ?? [];
+  return { ...d, content: d.content ?? [] };
 });
 
 export const getPost = cache(async (id: number): Promise<ApiPost | null> => {

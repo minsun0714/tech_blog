@@ -4,7 +4,7 @@ import { qs } from "@/lib/view";
 import Thumbnail from "./Thumbnail";
 
 /** 목록 카드. 카드 전체가 링크는 아니고, 썸네일/제목/메타/태그가 각각 링크(중첩 앵커 방지). */
-export default function PostCard({ post }: { post: EnrichedPost }) {
+export default function PostCard({ post, tagIds = {} }: { post: EnrichedPost; tagIds?: Record<string, number> }) {
   const href = post.postId != null ? `/posts/${post.postId}` : undefined;
 
   return (
@@ -26,10 +26,10 @@ export default function PostCard({ post }: { post: EnrichedPost }) {
               {post.categoryName}
             </Link>
           )}
-          {post.seriesName && (
+          {post.seriesName && post.seriesId != null && (
             <>
               <span className="sep">/</span>
-              <Link href={`/${qs({ series: post.seriesName })}`}>{post.seriesName}</Link>
+              <Link href={`/${qs({ series: post.seriesId })}`}>{post.seriesName}</Link>
             </>
           )}
           {post.postId != null && (
@@ -52,11 +52,15 @@ export default function PostCard({ post }: { post: EnrichedPost }) {
 
         {post.tagNames.length > 0 && (
           <div className="card-tags">
-            {post.tagNames.map((t) => (
-              <Link key={t} className="chip sm" href={`/${qs({ tag: t })}`}>
-                {t}
-              </Link>
-            ))}
+            {post.tagNames.map((t) =>
+              tagIds[t] != null ? (
+                <Link key={t} className="chip sm" href={`/${qs({ tag: tagIds[t] })}`}>
+                  {t}
+                </Link>
+              ) : (
+                <span key={t} className="chip sm">{t}</span>
+              ),
+            )}
           </div>
         )}
       </div>

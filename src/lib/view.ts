@@ -28,8 +28,8 @@ export interface EnrichedPost {
 
 export interface Filters {
   category: number | null;
-  series: string | null;
-  tag: string | null;
+  series: number | null;
+  tag: number | null;
   page: number;
 }
 
@@ -122,19 +122,15 @@ export function enrich(
 }
 
 export function filterPosts(posts: EnrichedPost[], f: Filters): EnrichedPost[] {
-  return posts.filter((p) => {
-    if (f.series && p.seriesName !== f.series) return false;
-    if (f.tag && !p.tagNames.includes(f.tag)) return false;
-    return true;
-  });
+  return posts;
 }
 
 /** 필터 상태를 쿼리스트링으로 직렬화 (`?category=...&page=2` 또는 ``). */
 export function qs(f: Partial<Filters>): string {
   const p = new URLSearchParams();
   if (f.category != null) p.set("category", String(f.category));
-  if (f.series) p.set("series", f.series);
-  if (f.tag) p.set("tag", f.tag);
+  if (f.series != null) p.set("series", String(f.series));
+  if (f.tag != null) p.set("tag", String(f.tag));
   if (f.page && f.page > 1) p.set("page", String(f.page));
   const s = p.toString();
   return s ? `?${s}` : "";

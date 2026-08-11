@@ -18,7 +18,7 @@ export default async function SeriesPage() {
       {pagedSeries.content.length ? (
         <div className="index-list">
           {pagedSeries.content.map((s) => (
-            <Link key={s.id} className="series-item" href={`/${qs({ series: s.name })}`}>
+            <Link key={s.id} className="series-item" href={`/${qs({ series: s.id })}`}>
               <span className="name">{s.name}</span>
               {typeof s.postCount === "number" && <span className="num">{s.postCount} posts</span>}
             </Link>

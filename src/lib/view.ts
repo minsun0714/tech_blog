@@ -121,10 +121,6 @@ export function enrich(
   };
 }
 
-export function filterPosts(posts: EnrichedPost[], f: Filters): EnrichedPost[] {
-  return posts;
-}
-
 /** 필터 상태를 쿼리스트링으로 직렬화 (`?category=...&page=2` 또는 ``). */
 export function qs(f: Partial<Filters>): string {
   const p = new URLSearchParams();

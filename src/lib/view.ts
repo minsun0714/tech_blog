@@ -27,14 +27,15 @@ export interface EnrichedPost {
 }
 
 export interface Filters {
-  category: string | null;
-  series: string | null;
-  tag: string | null;
+  category: number | null;
+  series: number | null;
+  tag: number | null;
   page: number;
 }
 
 /** 카테고리 트리를 평면화하며 각 노드에 트리 브랜치 문자열을 붙인다. */
 export interface FlatCategory {
+  id: number;
   name: string;
   branch: string;
 }
@@ -44,7 +45,7 @@ export function flattenCategories(nodes: ApiCategory[]): FlatCategory[] {
     list.forEach((n, i) => {
       const last = i === list.length - 1;
       const branch = root ? "" : prefix + (last ? "└─ " : "├─ ");
-      rows.push({ name: n.categoryName, branch });
+      rows.push({ id: n.categoryId, name: n.categoryName, branch });
       if (n.childrenCategoryList.length) {
         walk(n.childrenCategoryList, root ? "" : prefix + (last ? "   " : "│  "), false);
       }
@@ -60,6 +61,16 @@ export function categoryNameById(nodes: ApiCategory[], id: number | null): strin
   for (const n of nodes) {
     if (n.categoryId === id) return n.categoryName;
     const found = categoryNameById(n.childrenCategoryList, id);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function categoryById(nodes: ApiCategory[], id: number | null): ApiCategory | null {
+  if (id == null) return null;
+  for (const node of nodes) {
+    if (node.categoryId === id) return node;
+    const found = categoryById(node.childrenCategoryList, id);
     if (found) return found;
   }
   return null;
@@ -110,21 +121,12 @@ export function enrich(
   };
 }
 
-export function filterPosts(posts: EnrichedPost[], f: Filters): EnrichedPost[] {
-  return posts.filter((p) => {
-    if (f.category && p.categoryName !== f.category) return false;
-    if (f.series && p.seriesName !== f.series) return false;
-    if (f.tag && !p.tagNames.includes(f.tag)) return false;
-    return true;
-  });
-}
-
 /** 필터 상태를 쿼리스트링으로 직렬화 (`?category=...&page=2` 또는 ``). */
 export function qs(f: Partial<Filters>): string {
   const p = new URLSearchParams();
-  if (f.category) p.set("category", f.category);
-  if (f.series) p.set("series", f.series);
-  if (f.tag) p.set("tag", f.tag);
+  if (f.category != null) p.set("category", String(f.category));
+  if (f.series != null) p.set("series", String(f.series));
+  if (f.tag != null) p.set("tag", String(f.tag));
   if (f.page && f.page > 1) p.set("page", String(f.page));
   const s = p.toString();
   return s ? `?${s}` : "";

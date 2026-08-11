@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPost, getPosts, getCategories, getSeries, getComments } from "@/lib/api";
+import { getPost, getCategories, getSeries, getTags, getComments } from "@/lib/api";
 import { enrich } from "@/lib/view";
 import Thumbnail from "@/components/Thumbnail";
 import Comments from "@/components/Comments";
@@ -12,19 +12,19 @@ export default async function PostDetail({ params }: { params: { id: string } })
   const id = Number(params.id);
   if (!Number.isFinite(id)) notFound();
 
-  const [detail, posts, categories, series, comments] = await Promise.all([
+  const [detail, categories, series, tags, comments] = await Promise.all([
     getPost(id),
-    getPosts(),
     getCategories(),
     getSeries(),
+    getTags(),
     getComments(id),
   ]);
 
   // 상세 API 응답이 비어도 목록 데이터로 폴백
-  const base = detail ?? posts.find((p) => p.postId === id);
-  if (!base) notFound();
+  if (!detail) notFound();
 
-  const p = enrich(base, categories, series);
+  const p = enrich(detail, categories, series);
+  const tagIds = Object.fromEntries(tags.map((tag) => [tag.name, tag.id]));
   console.log("post thumbnail", detail);
   const html = (p.content || "").trim();
 
@@ -40,15 +40,15 @@ export default async function PostDetail({ params }: { params: { id: string } })
         </div>
 
         <div className="post-meta">
-          {p.categoryName && (
-            <Link className="cat" href={`/${qs({ category: p.categoryName })}`}>
+          {p.categoryName && p.categoryId != null && (
+            <Link className="cat" href={`/${qs({ category: p.categoryId })}`}>
               {p.categoryName}
             </Link>
           )}
-          {p.seriesName && (
+          {p.seriesName && p.seriesId != null && (
             <>
               <span>/</span>
-              <Link href={`/${qs({ series: p.seriesName })}`}>{p.seriesName}</Link>
+              <Link href={`/${qs({ series: p.seriesId })}`}>{p.seriesName}</Link>
             </>
           )}
           <span>·</span>
@@ -58,11 +58,15 @@ export default async function PostDetail({ params }: { params: { id: string } })
         <h1 className="post-title">{p.title}</h1>
 
         <div className="post-tags">
-          {p.tagNames.map((t) => (
-            <Link key={t} className="chip plain" href={`/${qs({ tag: t })}`}>
-              {t}
-            </Link>
-          ))}
+          {p.tagNames.map((t) =>
+            tagIds[t] != null ? (
+              <Link key={t} className="chip plain" href={`/${qs({ tag: tagIds[t] })}`}>
+                {t}
+              </Link>
+            ) : (
+              <span key={t} className="chip plain">{t}</span>
+            ),
+          )}
         </div>
 
         {html ? (

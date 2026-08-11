@@ -21,13 +21,13 @@ export default function CategoryTree({
   return (
     <div className="tree">
       {rows.map((row) => {
-        const active = current.category === row.name;
+        const active = current.category === row.id;
         return (
           <button
-            key={row.name}
+            key={row.id}
             className={`node${active ? " active" : ""}`}
             onClick={() => {
-              toggle("category", row.name);
+              toggle("category", row.id);
               onNavigate?.();
             }}
           >

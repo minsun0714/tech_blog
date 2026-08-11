@@ -8,9 +8,9 @@ export function useFilters() {
   const sp = useSearchParams();
 
   const current: Filters = {
-    category: sp.get("category"),
-    series: sp.get("series"),
-    tag: sp.get("tag"),
+    category: Number(sp.get("category")) || null,
+    series: Number(sp.get("series")) || null,
+    tag: Number(sp.get("tag")) || null,
     page: Number(sp.get("page") || "1") || 1,
   };
 
@@ -22,7 +22,7 @@ export function useFilters() {
      * category/series/tag 는 상호 배타적 — 하나를 고르면 나머지 둘은 해제된다.
      * 같은 값이면 해제. 페이지는 1로 초기화.
      */
-    toggle: (key: "category" | "series" | "tag", value: string) => {
+    toggle: (key: "category" | "series" | "tag", value: number) => {
       const next: Filters = { ...current, category: null, series: null, tag: null, page: 1 };
       if (current[key] !== value) next[key] = value;
       go(next);

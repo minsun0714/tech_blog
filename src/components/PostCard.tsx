@@ -79,7 +79,7 @@ export default function PostCard({
 
         <span className="cmt-count" aria-label={`댓글 ${post.commentCount}개`}>
           <Bubble />
-          댓글 {post.commentCount}
+          {post.commentCount}
         </span>
       </div>
     </article>

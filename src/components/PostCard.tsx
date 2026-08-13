@@ -2,16 +2,27 @@ import Link from "next/link";
 import type { EnrichedPost } from "@/lib/view";
 import { qs } from "@/lib/view";
 import Thumbnail from "./Thumbnail";
+import { Bubble } from "./icons";
 
 /** 목록 카드. 카드 전체가 링크는 아니고, 썸네일/제목/메타/태그가 각각 링크(중첩 앵커 방지). */
-export default function PostCard({ post, tagIds = {} }: { post: EnrichedPost; tagIds?: Record<string, number> }) {
+export default function PostCard({
+  post,
+  tagIds = {},
+}: {
+  post: EnrichedPost;
+  tagIds?: Record<string, number>;
+}) {
   const href = post.postId != null ? `/posts/${post.postId}` : undefined;
 
   return (
     <article className="card">
       {href ? (
         <Link href={href} className="thumb" aria-label={post.title}>
-          <Thumbnail seed={post.postId ?? 0} label={post.categoryName} src={post.thumbnailImageUrl} />
+          <Thumbnail
+            seed={post.postId ?? 0}
+            label={post.categoryName}
+            src={post.thumbnailImageUrl}
+          />
         </Link>
       ) : (
         <div className="thumb">
@@ -58,11 +69,18 @@ export default function PostCard({ post, tagIds = {} }: { post: EnrichedPost; ta
                   {t}
                 </Link>
               ) : (
-                <span key={t} className="chip sm">{t}</span>
+                <span key={t} className="chip sm">
+                  {t}
+                </span>
               ),
             )}
           </div>
         )}
+
+        <span className="cmt-count" aria-label={`댓글 ${post.commentCount}개`}>
+          <Bubble />
+          댓글 {post.commentCount}
+        </span>
       </div>
     </article>
   );

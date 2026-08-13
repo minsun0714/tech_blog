@@ -24,6 +24,7 @@ export interface EnrichedPost {
   seriesName: string | null;
   tagNames: string[];
   thumbnailImageUrl: string | null;
+  commentCount: number;
 }
 
 export interface Filters {
@@ -118,6 +119,7 @@ export function enrich(
     seriesName: seriesNameById(series?.content, post.seriesId),
     tagNames: post.tagNames ?? [],
     thumbnailImageUrl: post.thumbnailImageUrl ?? null,
+    commentCount: post.commentCount ?? 0,
   };
 }
 

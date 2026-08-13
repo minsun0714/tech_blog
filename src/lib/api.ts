@@ -35,19 +35,38 @@ export interface ApiPost {
   postId: number | null;
   title: string;
   content: string;
-  openStatus: string;
+  publishStatus: string;
   tagNames: string[];
   categoryId: number | null;
   seriesId: number | null;
   // 백엔드가 곧 추가 예정. 없거나 null이면 기본 썸네일로 폴백한다.
   thumbnailImageUrl?: string | null;
+  commentCount: number;
 }
+
+export interface PageSort {
+  empty: boolean;
+  sorted: boolean;
+  unsorted: boolean;
+}
+
+export interface Pageable {
+  pageNumber: number;
+  pageSize: number;
+  sort: PageSort;
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
 export interface PageResponse<T> {
   content: T[];
+  pageable: Pageable;
   totalPages: number;
   totalElements: number;
   number: number;
   size: number;
+  sort: PageSort;
   first: boolean;
   last: boolean;
   numberOfElements: number;
